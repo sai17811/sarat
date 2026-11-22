@@ -11,7 +11,9 @@ npm run typecheck  # tsc --noEmit
 npm run build && npm start
 ```
 
-Deploy: push to GitHub → import in Vercel (zero config).
+Deploy on Netlify: connect this repository and deploy. `netlify.toml` sets
+`npm run build` as the build command and `.next` as the publish directory.
+Netlify automatically applies its Next.js integration to serve pages and assets.
 
 > Dependency versions use caret ranges. If `npm install` reports a peer conflict,
 > run `npm install three@latest @types/three@latest` and retry.

@@ -29,12 +29,14 @@ export function ExperienceLoader() {
     if (window.innerWidth < 820 || (nav.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) useStore.getState().setTier('low');
 
     // Let the browser finish first paint / hydration before pulling the 3D chunk.
-    const idle = window.requestIdleCallback;
     let cancelled = false;
-    let handle = 0;
-    if (idle) handle = idle(() => { if (!cancelled) setOk(true); }, { timeout: 1600 });
-    else handle = window.setTimeout(() => { if (!cancelled) setOk(true); }, 400);
-    return () => { cancelled = true; if (idle && window.cancelIdleCallback) window.cancelIdleCallback(handle); else window.clearTimeout(handle); };
+    const loadExperience = () => { if (!cancelled) setOk(true); };
+    if (typeof window.requestIdleCallback === 'function' && typeof window.cancelIdleCallback === 'function') {
+      const handle = window.requestIdleCallback(loadExperience, { timeout: 1600 });
+      return () => { cancelled = true; window.cancelIdleCallback(handle); };
+    }
+    const handle = window.setTimeout(loadExperience, 400);
+    return () => { cancelled = true; window.clearTimeout(handle); };
   }, []);
 
   return ok ? <Experience /> : null;
