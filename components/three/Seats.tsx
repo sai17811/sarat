@@ -13,7 +13,7 @@ import { getTextures } from './textures';
 /** Cushion, tilted back, two armrests (+ footrest on recliners), merged into one geometry. */
 function seatGeometry(rec: boolean) {
   const w = rec ? 1.2 : 0.74;
-  const parts = [];
+  const parts: RoundedBoxGeometry[] = [];
   const add = (g: RoundedBoxGeometry, x: number, y: number, z: number, rx = 0) => {
     if (rx) g.rotateX(rx);
     g.translate(x, y, z);
