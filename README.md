@@ -13,7 +13,9 @@ npm run build && npm start
 
 Deploy on Netlify: connect this repository and deploy. `netlify.toml` sets
 `npm run build` as the build command and `.next` as the publish directory.
-Netlify automatically applies its Next.js integration to serve pages and assets.
+The explicitly configured `@netlify/plugin-nextjs` adapter generates the routing,
+server function, and asset handling needed to serve Next.js on Netlify. Publishing
+the raw `.next` directory without this adapter produces a Netlify 404 at `/`.
 
 > Dependency versions use caret ranges. If `npm install` reports a peer conflict,
 > run `npm install three@latest @types/three@latest` and retry.
