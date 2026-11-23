@@ -1,0 +1,244 @@
+<title>Sarathi Mobile Plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f5f2; --surface:#ffffff; --ink:#1b1916; --muted:#6b655d; --line:#e4dfd8;
+  --accent:#b4471f; --accent-soft:#f6e6de; --ok:#2f7a4b; --ok-soft:#e3f1e8; --warn:#9a6a00; --warn-soft:#f7eed6;
+  --code:#f1ede7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f0d0c; --surface:#181513; --ink:#efe9e2; --muted:#a39a8f; --line:#2c2724;
+    --accent:#ef8a5f; --accent-soft:#2d1b13; --ok:#6fcf97; --ok-soft:#13261b; --warn:#e6b84f; --warn-soft:#2a2210;
+    --code:#221e1b;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f0d0c; --surface:#181513; --ink:#efe9e2; --muted:#a39a8f; --line:#2c2724;
+  --accent:#ef8a5f; --accent-soft:#2d1b13; --ok:#6fcf97; --ok-soft:#13261b; --warn:#e6b84f; --warn-soft:#2a2210;
+  --code:#221e1b;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Inter Tight",system-ui,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-left)) 80px max(16px,env(safe-area-inset-right))}
+header{border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:32px}
+.eyebrow{font:500 12px/1 "JetBrains Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(28px,5vw,42px);line-height:1.1;margin:10px 0 12px;letter-spacing:-.02em}
+h2{font-size:22px;margin:48px 0 12px;letter-spacing:-.01em}
+h3{font-size:16px;margin:24px 0 8px}
+p{margin:0 0 12px}
+.lede{color:var(--muted);font-size:17px;max-width:65ch}
+code{font:13px/1.4 "JetBrains Mono",monospace;background:var(--code);padding:2px 5px;border-radius:4px}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+nav.toc a{font-size:13px;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--surface)}
+nav.toc a:hover{border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card h3{margin-top:0}
+.card ul{margin:0;padding-left:18px}
+.card li{margin:4px 0}
+.tag{display:inline-block;font:500 11px/1 "JetBrains Mono",monospace;padding:4px 7px;border-radius:4px;margin-right:6px;vertical-align:middle}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.hot{background:var(--accent-soft);color:var(--accent)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+tr:last-child td{border-bottom:0}
+.phase{display:grid;grid-template-columns:56px 1fr;gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+.phase .n{font:500 28px/1 "JetBrains Mono",monospace;color:var(--accent)}
+.phase ul{margin:6px 0 0;padding-left:18px}
+.q{background:var(--accent-soft);border-radius:10px;padding:18px 20px}
+.q ol{margin:0;padding-left:20px}
+.q li{margin:8px 0}
+.note{color:var(--muted);font-size:14px}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Sarathi Cinemas · Next.js + R3F</div>
+  <h1>Mobile, responsive layout &amp; 3D load plan</h1>
+  <p class="lede">I audited the project you sent. The 3D side is already well optimized, so the biggest wins come from: rendering only when something changes, framing the camera for portrait phones, a static fallback for weak devices, and a real responsive CSS system. Right now there is only one breakpoint, at 820px.</p>
+  <nav class="toc">
+    <a href="#state">Current state</a><a href="#perf">3D &amp; load wins</a><a href="#layout">Responsive layout</a><a href="#mobile3d">Mobile 3D</a><a href="#assets">Future GLB pipeline</a><a href="#measure">Measuring</a><a href="#curtain">Curtain intro</a><a href="#roadmap">Roadmap</a><a href="#questions">Decisions</a>
+  </nav>
+</header>
+
+<section id="state">
+<h2>What is already good, and what is missing</h2>
+<div class="grid">
+  <div class="card"><h3><span class="tag ok">done</span>Already optimized</h3><ul>
+    <li>The 3D chunk is lazy-loaded (<code>next/dynamic</code>, <code>ssr:false</code>, idle callback)</li>
+    <li>WebGL2 check plus high/low device tiers</li>
+    <li>Adaptive DPR via PerformanceMonitor</li>
+    <li>The hall is merged into about 8 draw calls; 216 seats are instanced in 2 draws</li>
+    <li>Baked shadows; the screen texture updates at 30 fps</li>
+    <li>Particles are animated on the GPU; scroll state lives outside React</li>
+    <li>No GLB or image textures; everything is procedural</li>
+  </ul></div>
+  <div class="card"><h3><span class="tag hot">gap</span>Load / runtime</h3><ul>
+    <li>The render loop runs every frame, even when nothing moves</li>
+    <li>Stars (900 points) are not tiered</li>
+    <li>Additive Beam and rings cause overdraw, which is costly on mobile GPUs</li>
+    <li>Four font families load up front, Telugu included</li>
+    <li>There is no static fallback image when the 3D is skipped</li>
+  </ul></div>
+  <div class="card"><h3><span class="tag warn">gap</span>Layout</h3><ul>
+    <li>Only one breakpoint (820px)</li>
+    <li>Uses <code>100vh</code>, which jumps under mobile URL bars</li>
+    <li>No safe-area handling (notch, home bar)</li>
+    <li>Camera shots are framed for widescreen and crop badly on portrait phones</li>
+    <li>Giant hero and ghost type sizes on small screens</li>
+  </ul></div>
+</div>
+</section>
+
+<section id="perf">
+<h2>3D &amp; load optimizations</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Change</th><th>Where</th><th>Impact</th><th>Effort</th></tr></thead>
+<tbody>
+<tr><td><b>Render on demand.</b> Use <code>frameloop="demand"</code> and call <code>invalidate()</code> on scroll, camera easing, hover, and the 30 fps screen tick.</td><td>Canvas, Director, Atmosphere</td><td>Large (battery and heat)</td><td>M</td></tr>
+<tr><td><b>Pause when offscreen.</b> An IntersectionObserver on the booking and sheet sections stops rendering when the canvas is hidden behind UI.</td><td>Canvas wrapper</td><td>Medium</td><td>S</td></tr>
+<tr><td><b>Tier the stars.</b> 900 on high, about 250 on low.</td><td><code>Atmosphere.tsx</code></td><td>Small to medium</td><td>S</td></tr>
+<tr><td><b>Cut overdraw on low.</b> Skip AtmosRings and use a simpler, smaller Beam plane without flare.</td><td><code>Atmosphere.tsx</code></td><td>Medium on mobile GPUs</td><td>S</td></tr>
+<tr><td><b>Merge <code>useFrame</code> loops.</b> Replace the separate loops with one uniform-updating ticker.</td><td>Atmosphere</td><td>Small</td><td>S</td></tr>
+<tr><td><b>Load 3D after LCP or interaction.</b> Show a poster image first; import the scene after first input or about 2s idle.</td><td><code>page.tsx</code> / scene loader</td><td>Large on slow networks</td><td>S</td></tr>
+<tr><td><b>Fonts.</b> Load only the weights you use, keep <code>subsets:['latin']</code>, and lazy-load Noto Serif Telugu (or use <code>preload:false</code>).</td><td><code>layout.tsx</code></td><td>About 100–300 KB saved</td><td>S</td></tr>
+<tr><td><b>Respect Save-Data.</b> When <code>navigator.connection.saveData</code> is set or the network is 2G/3G, use the static poster mode.</td><td>Tier detection</td><td>Medium</td><td>S</td></tr>
+<tr><td><b>Bundle check.</b> Run <code>@next/bundle-analyzer</code>; import only the drei helpers you use and tree-shake postprocessing.</td><td>next.config</td><td>Small to medium</td><td>S</td></tr>
+</tbody></table></div>
+<p class="note">Effort: S is under half a day, M is 1–2 days.</p>
+</section>
+
+<section id="layout">
+<h2>Responsive layout system</h2>
+<h3>Breakpoints</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Name</th><th>Range</th><th>Key changes</th></tr></thead>
+<tbody>
+<tr><td>Phone</td><td>≤ 480px</td><td>Rail becomes a bottom nav bar; reel padding around 20px; single-column grids; booking is a full-height sheet</td></tr>
+<tr><td>Large phone</td><td>481–767px</td><td>Same as phone, with 2-column showtimes and facts</td></tr>
+<tr><td>Tablet</td><td>768–1023px</td><td>Slim left rail or top nav; 2-column nowgrid; booking is a side drawer at about 420px</td></tr>
+<tr><td>Laptop</td><td>1024–1439px</td><td>Current desktop layout, with tightened padding</td></tr>
+<tr><td>Desktop</td><td>≥ 1440px</td><td>Max content width; larger type ceiling</td></tr>
+<tr><td>Landscape phone</td><td><code>(max-height:500px) and (orientation:landscape)</code></td><td>Hide the ghost text; compact header; booking is a side drawer instead of a bottom sheet</td></tr>
+</tbody></table></div>
+
+<h3>CSS changes</h3>
+<div class="grid">
+  <div class="card"><h3>Viewport &amp; safe areas</h3><ul>
+    <li>Replace <code>100vh</code> with <code>100svh</code> for reels and <code>100dvh</code> for the fixed canvas and sheets, keeping <code>vh</code> as a fallback</li>
+    <li>Add <code>viewport-fit=cover</code> and <code>env(safe-area-inset-*)</code> padding on the header, nav and sheet</li>
+  </ul></div>
+  <div class="card"><h3>Type &amp; spacing</h3><ul>
+    <li>Lower the hero h1 clamp minimum (for example <code>clamp(48px,14vw,230px)</code>)</li>
+    <li>Scale the ghost Telugu text down, or hide it below 480px</li>
+    <li>Move reel padding to tokens: <code>--pad-x</code> and <code>--pad-y</code> per breakpoint</li>
+  </ul></div>
+  <div class="card"><h3>Components</h3><ul>
+    <li>Container queries for <code>.nowgrid</code>, <code>.specs</code> and <code>.facts</code> so they adapt to their own width</li>
+    <li>Tap targets of at least 44px (showtimes, seats, rail dots)</li>
+    <li>A draggable booking sheet with snap points (peek, half, full)</li>
+    <li>Tooltips become tap-to-show on touch, via <code>@media (hover:none)</code></li>
+  </ul></div>
+</div>
+</section>
+
+<section id="mobile3d">
+<h2>Mobile 3D experience</h2>
+<div class="grid">
+  <div class="card"><h3>Portrait camera framing</h3><ul>
+    <li>Scale FOV by aspect ratio so the screen width (SW 18) stays in frame: when aspect &lt; 1, widen the vertical FOV</li>
+    <li>Add a <code>SHOTS_PORTRAIT</code> set with the camera pulled back and higher</li>
+    <li>Switch sets on resize or orientation change</li>
+  </ul></div>
+  <div class="card"><h3>Three experience levels</h3><ul>
+    <li><b>Full:</b> desktop and high-tier devices</li>
+    <li><b>Lite:</b> low-tier devices, with no post or rings, fewer stars, DPR 1, rendered on demand</li>
+    <li><b>Poster:</b> a static AVIF/WebP render with a "Tap to enter 3D" button. Used for reduced motion, Save-Data, WebGL failure, or very weak devices.</li>
+  </ul></div>
+  <div class="card"><h3>Booking on phones</h3><ul>
+    <li>An SVG 2D seat map built from the same <code>seats.ts</code> data, with pinch-zoom</li>
+    <li>An optional "View from seat" button that drives the 3D seat POV</li>
+    <li>It is faster, accessible, and works without WebGL</li>
+  </ul></div>
+</div>
+</section>
+
+<section id="assets">
+<h2>Future GLB pipeline (when real models arrive)</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Step</th><th>Tool</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Bake lighting and AO</td><td>Blender (Cycles bake)</td><td>No realtime lights or shadows needed</td></tr>
+<tr><td>Compress geometry</td><td>gltf-transform with <code>meshopt</code> (or Draco)</td><td>Files 5–10× smaller</td></tr>
+<tr><td>Compress textures</td><td>gltf-transform <code>etc1s</code>/<code>uastc</code> to KTX2 (Basis)</td><td>Stays compressed on the GPU, saving a lot of VRAM on phones</td></tr>
+<tr><td>Atlas and texture sizes</td><td>1K textures for mobile, 2K for desktop</td><td>Fewer draw calls, less memory</td></tr>
+<tr><td>LOD</td><td>drei <code>&lt;Detailed&gt;</code> or a separate <code>-mobile.glb</code></td><td>Lighter mesh for low tier</td></tr>
+<tr><td>Components</td><td><code>gltfjsx --transform</code> with <code>useGLTF.preload</code></td><td>Typed, tree-shaken scene graph</td></tr>
+<tr><td>Budget</td><td>GLB ≤ 6 MB desktop, ≤ 2–3 MB mobile; ≤ 60 draw calls</td><td>Matches your README targets</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="measure">
+<h2>How we measure</h2>
+<div class="grid">
+  <div class="card"><h3>Load</h3><ul><li>Lighthouse mobile and WebPageTest (Moto G4 / 4G profile)</li><li>Targets: LCP &lt; 2.5s, INP &lt; 200ms, CLS &lt; 0.1</li><li>First-load JS budget before 3D: &lt; 200 KB gzip</li></ul></div>
+  <div class="card"><h3>Runtime</h3><ul><li><code>r3f-perf</code> overlay (draw calls, triangles, GPU ms)</li><li>Spector.js for frame captures</li><li>Target: steady 60 fps on a mid-range Android; 30 fps minimum on low-end</li></ul></div>
+  <div class="card"><h3>Real devices</h3><ul><li>One low-end Android (about 3–4 GB RAM)</li><li>One recent iPhone (Safari)</li><li>One tablet in both orientations</li></ul></div>
+</div>
+</section>
+
+<section id="curtain">
+<h2>Premium curtain-opening intro (covers the loading)</h2>
+<p>The idea is a theatre-style opening: the curtains part, a spotlight sweeps, and the Sarathi logo glows while the 3D scene and data load behind it. Visitors see a show instead of a spinner.</p>
+<div class="grid">
+  <div class="card"><h3>How it works</h3><ul>
+    <li>The curtain is pure CSS/SVG (two velvet panels with gradients and folds, plus a gold logo). It weighs about 5–10 KB and lives in the server-rendered HTML, so it paints immediately and counts as the LCP.</li>
+    <li>While it plays, it preloads in parallel: the 3D chunk (<code>import()</code>), seat and showtime data, and the fonts</li>
+    <li>The curtains open when the scene sends a "ready" signal (first frame rendered), with a minimum of about 1.2s so it always looks intentional</li>
+    <li>The 3D canvas fades in from behind the curtain, and the camera starts with a slow push-in toward the screen</li>
+  </ul></div>
+  <div class="card"><h3>Guardrails</h3><ul>
+    <li><b>Maximum wait of about 3s.</b> If the 3D isn't ready by then, the curtains open onto the poster image and the 3D swaps in later. Users are never held hostage on slow networks.</li>
+    <li>A <b>Skip</b> tap; plays once per session (<code>sessionStorage</code>), with a short 0.6s version on repeat visits</li>
+    <li><code>prefers-reduced-motion</code>: a simple fade, no curtain motion</li>
+    <li>Animate only <code>transform</code> and <code>opacity</code> (GPU-composited, no layout jank on budget phones)</li>
+    <li>Page text stays in the HTML underneath for SEO and accessibility</li>
+  </ul></div>
+  <div class="card"><h3>Optional polish</h3><ul>
+    <li>A soft projector-whirr or orchestral swell, played only after the first tap (browsers block autoplay audio)</li>
+    <li>Gold dust particles drawn in CSS, not WebGL</li>
+    <li>A thin progress line along the curtain hem, driven by real load progress</li>
+  </ul></div>
+</div>
+<p class="note">This fits the 1.5 MB budget: the curtain costs almost nothing, and it buys 1–3s of loading time that the user enjoys instead of waits through.</p>
+</section>
+
+<section id="roadmap">
+<h2>Roadmap</h2>
+<div class="phase"><div class="n">0</div><div><b>Measure (½ day)</b><ul><li>Record a baseline with Lighthouse, r3f-perf and the bundle analyzer, so every later change has numbers behind it</li></ul></div></div>
+<div class="phase"><div class="n">1</div><div><b>Quick wins and curtain intro (2–3 days)</b><ul><li>Render on demand, pause offscreen, tiered stars, no rings on low, trimmed fonts (Telugu lazy), Save-Data check</li><li>Curtain-opening intro with parallel preload, a ready signal and a 3s cap</li><li>Enforce the ≤ 1.5 MB first-load budget</li></ul></div></div>
+<div class="phase"><div class="n">2</div><div><b>Responsive layout (2–4 days)</b><ul><li>Breakpoint tokens, svh/dvh units, safe areas, bottom nav, container queries, draggable sheet, tap targets</li><li>2D SVG seat map for phones</li></ul></div></div>
+<div class="phase"><div class="n">3</div><div><b>Mobile 3D (2–3 days)</b><ul><li>Portrait shots and FOV, Full/Lite/Poster levels, poster plus "Tap to enter 3D" on weak phones, optional "View from seat"</li></ul></div></div>
+<div class="phase"><div class="n">4</div><div><b>Asset pipeline (when models exist)</b><ul><li>Blender bake, meshopt, KTX2, LOD, gltfjsx, size budgets checked in CI</li></ul></div></div>
+</section>
+
+<section id="questions">
+<h2>Decisions</h2>
+<div class="q"><ol>
+  <li><b>Target devices:</b> all of them: budget Android, mid/high-end phones, tablets and laptops/desktops</li>
+  <li><b>Fallback:</b> weak phones get a poster plus "Tap to enter 3D"</li>
+  <li><b>Budget:</b> strict, ≤ 1.5 MB first load</li>
+  <li><b>Booking:</b> phones get a 2D seat map, with 3D as an optional view</li>
+  <li><b>Models (assumed, change if wrong):</b> the scene stays procedural for now, and the GLB pipeline is ready if models arrive</li>
+  <li><b>Languages (assumed, change if wrong):</b> Telugu is lazy-loaded as a subset only where it's used, with no Telugu font on first load</li>
+  <li><b>Opening:</b> a premium curtain-opening intro that loads the 3D and data behind it</li>
+</ol></div>
+</section>
+</div>
